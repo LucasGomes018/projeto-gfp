@@ -1,21 +1,20 @@
 import { BD } from "../db.js";
-import jwt from 'jsonwebtoken';
 
 const SECRET_KEY = 'chave_api_gfp';
 
 class rotasSubCategorias {
     static async novaSubCategoria(req, res) {
-        const { nome, id_categoria } = req.body;
+        const { nome, id_categoria, gasto_fixo } = req.body;
         // Validando dados
-        if (!nome || !id_categoria) {
+        if (!nome || !id_categoria || !gasto_fixo) {
             return res.status(400).json({ message: "Todos os campos são obrigatórios!" });
         }
 
         try {
             const categoria = await BD.query(`
-                INSERT INTO subcategorias (nome, id_categoria) 
-                    VALUES ($1, $2) RETURNING *`,
-                [nome, id_categoria]
+                INSERT INTO subcategorias (nome, id_categoria, gasto_fixo) 
+                    VALUES ($1, $2, $3) RETURNING *`,
+                [nome, id_categoria, gasto_fixo]
             );
 
             res.status(201).json("Sub-Categoria Cadastrada");
@@ -72,11 +71,11 @@ class rotasSubCategorias {
 
     static async atualizarTodosCampos(req, res) {
         const { id } = req.params;
-        const { nome, id_categoria } = req.body;
+        const { nome, id_categoria, gasto_fixo, ativo } = req.body;
         try {
             const subcategoria = await BD.query(
-                `UPDATE subcategorias SET nome = $1, id_categoria = $2 WHERE id_subcategoria = $3 RETURNING *`, // comando para atualizar o usuario
-                [nome, id_categoria, id] // comando para atualizar o usuario
+                `UPDATE subcategorias SET nome = $1, id_categoria = $2, gasto_fixo = $3, ativo = $4 WHERE id_subcategoria = $5 RETURNING *`, // comando para atualizar o usuario
+                [nome, id_categoria, gasto_fixo, ativo, id] // comando para atualizar o usuario
             )
             return res.status(200).json(subcategoria.rows[0]);
         } catch (error) {
@@ -87,7 +86,7 @@ class rotasSubCategorias {
 
     static async atualizar(req, res) {
         const { id } = req.params;
-        const { nome, id_categoria } = req.body;
+        const { nome, id_categoria, gasto_fixo, ativo } = req.body;
         try {
           // Inicializar arrays(vetores) para armazenar os campos e valores que serão atualizados
           const campos = [];
@@ -99,8 +98,16 @@ class rotasSubCategorias {
             valores.push(nome);
           }
           if (id_categoria !== undefined) {
-            campos.push(`tipo_transacao = $${valores.length + 1}`);
-            valores.push(tipo_transacao);
+            campos.push(`id_categoria = $${valores.length + 1}`);
+            valores.push(id_categoria);
+          }
+          if (gasto_fixo !== undefined) {
+            campos.push(`gasto_fixo = $${valores.length + 1}`);
+            valores.push(gasto_fixo);
+          }
+          if (ativo !== undefined) {
+            campos.push(`ativo = $${valores.length + 1}`);
+            valores.push(ativo);
           }
           
           if (campos.length === 0) {
@@ -128,24 +135,5 @@ class rotasSubCategorias {
     }
 }
 
-export function autenticarToken3(req, res, next) {
-    // Extrair do token o cabeçalho da requisição
-    const token = req.headers['authorization']; // Bearer<token>
-  
-    // Verificar se o token foi fornecido na requisição
-    if (!token) return res.status(403).json({message: "Token não fornecido"})
-  
-    // Verificar a validade do token
-    //jwt.verify que valida se o token é legitimo
-    jwt.verify(token.split(" ")[1], SECRET_KEY, (err, subcategoria) => {
-      if(err) return res.status(403).json({message: "Token inválido"})
-  
-      // Se o token for válido, adiciona os dados do usuario(decodificados no token)
-      // tornando essas informações disponíveis nas rotas que precisam da autenticação
-      req.subcategoria = subcategoria;
-      next();
-  
-    })
-  }
 
 export default rotasSubCategorias;

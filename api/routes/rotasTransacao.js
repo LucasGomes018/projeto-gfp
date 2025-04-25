@@ -1,21 +1,21 @@
 import { BD } from "../db.js";
-import jwt from 'jsonwebtoken';
 
 const SECRET_KEY = 'chave_api_gfp';
 
 class rotasTransacao {
     static async novaTransacao(req, res) {
-        const { valor, descricao, data_transacao, data_vencimento, data_pagamento, tipo_transacao, id_local_transacao, id_categoria, id_subcategoria, id_usuario, num_parcelas, parcela_atual } = req.body;
+        const { valor, descricao, data_vencimento, data_pagamento, tipo_transacao, id_local_transacao, id_categoria, id_subcategoria, id_usuario, num_parcelas, parcela_atual } = req.body;
         // Validando dados
-        if (!valor || !descricao || !data_transacao || !data_vencimento || !data_pagamento || !tipo_transacao || !id_local_transacao || !id_categoria || !id_subcategoria || !id_usuario || !num_parcelas || !parcela_atual) {
+        if (!valor || !descricao || !data_vencimento || !data_pagamento || !tipo_transacao || !id_local_transacao || !id_categoria || !id_subcategoria || !id_usuario || !num_parcelas || !parcela_atual) {
             return res.status(400).json({ message: "Todos os campos são obrigatórios!" });
         }
 
         try {
+            const tipoTransacao = tipo_transacao.toUpperCase();
             const transacao = await BD.query(`
-                INSERT INTO transacoes (valor, descricao, data_transacao, data_vencimento, data_pagamento, tipo_transacao, id_local_transacao, id_categoria, id_subcategoria, id_usuario, num_parcelas, parcela_atual)
-                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING *`, 
-                [valor, descricao, data_transacao, data_vencimento, data_pagamento, tipo_transacao, id_local_transacao, id_categoria, id_subcategoria, id_usuario, num_parcelas, parcela_atual]
+                INSERT INTO transacoes (valor, descricao, data_vencimento, data_pagamento, tipo_transacao, id_local_transacao, id_categoria, id_subcategoria, id_usuario, num_parcelas, parcela_atual)
+                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *`, 
+                [valor, descricao, data_vencimento, data_pagamento, tipoTransacao, id_local_transacao, id_categoria, id_subcategoria, id_usuario, num_parcelas, parcela_atual]
             );
 
             res.status(201).json("Transação Cadastrada");
@@ -87,6 +87,7 @@ class rotasTransacao {
                       num_parcelas,
                        parcela_atual } = req.body;
         try {
+          const tipoTransacao = tipo_transacao.toUpperCase();
             const transacao = await BD.query(
                 `UPDATE transacoes SET valor = $1
                  descricao = $2,
@@ -105,7 +106,7 @@ class rotasTransacao {
                       data_transacao,
                        data_vencimento,
                         data_pagamento,
-                         tipo_transacao,
+                         tipoTransacao,
                           id_local_transacao,
                            id_categoria,
                             id_subcategoria,
@@ -124,6 +125,7 @@ class rotasTransacao {
         const { id } = req.params;
         const {  valor, descricao, data_transacao, data_vencimento, data_pagamento, tipo_transacao, id_local_transacao, id_categoria, id_subcategoria, id_usuario, num_parcelas, parcela_atual  } = req.body;
         try {
+          const tipoTransacao = tipo_transacao.toUpperCase();
           // Inicializar arrays(vetores) para armazenar os campos e valores que serão atualizados
           const campos = [];
           const valores = [];
@@ -149,9 +151,9 @@ class rotasTransacao {
             campos.push(`data_pagamento = $${valores.length + 1}`);
             valores.push(data_pagamento);
           }
-          if (tipo_transacao !== undefined) {
-            campos.push(`tipo_transacao = $${valores.length + 1}`);
-            valores.push(tipo_transacao);
+          if (tipoTransacao !== undefined) {
+            campos.push(`tipoTransacao = $${valores.length + 1}`);
+            valores.push(tipoTransacao);
           }
           if (id_local_transacao !== undefined) {
             campos.push(`id_local_transacao = $${valores.length + 1}`);
@@ -202,25 +204,5 @@ class rotasTransacao {
     }
 }
 
-
-export function autenticarToken5(req, res, next) {
-    // Extrair do token o cabeçalho da requisição
-    const token = req.headers['authorization']; // Bearer<token>
-  
-    // Verificar se o token foi fornecido na requisição
-    if (!token) return res.status(403).json({message: "Token não fornecido"})
-  
-    // Verificar a validade do token
-    //jwt.verify que valida se o token é legitimo
-    jwt.verify(token.split(" ")[1], SECRET_KEY, (err, transacao) => {
-      if(err) return res.status(403).json({message: "Token inválido"})
-  
-      // Se o token for válido, adiciona os dados do usuario(decodificados no token)
-      // tornando essas informações disponíveis nas rotas que precisam da autenticação
-      req.transacao = transacao;
-      next();
-  
-    })
-}
 
 export default rotasTransacao;

@@ -6,41 +6,59 @@ export const corFundo2 = '#262626';
 
 
 const Estilos = {
-    conteudo : {
+    conteudo: {
         flex: 1,
         width: '100%',
-        backgroundColor: corFundo,
+        backgroundColor: corFundo, // Fundo escuro para consistência com a paleta
     },
     titulo: {
         textAlign: "center",
-        fontSize: 40,
+        fontSize: 26, // Tamanho ajustado para melhor legibilidade
         color: "#2C3E50", // Azul-escuro para um visual elegante
         fontWeight: "bold",
-        marginBottom: 25,
-        letterSpacing: 1, // Espaçamento entre letras para refinamento
+        marginBottom: 20,
+        letterSpacing: 1.5, // Maior espaçamento entre letras
     },
     texto: {
         textAlign: "center",
-        fontSize: 20,
+        fontSize: 18, // Tamanho ajustado para subtítulos ou textos menores
         color: "#2C3E50", // Azul-escuro para um visual elegante
-        fontWeight: "bold",
-        marginBottom: 25,
-        letterSpacing: 1, // Espaçamento entre letras para refinamento
+        fontWeight: "500", // Peso intermediário para contraste
+        marginBottom: 15,
+        letterSpacing: 1,
     },
-
     botao: {
-        backgroundColor: corPrincipal,
-        color: "#fff",
-        padding: 10,
-        borderRadius: 5,
+        backgroundColor: corPrincipal, // Cor principal para destaque
+        color: "#fff", // Texto branco
+        padding: 12, // Maior espaçamento interno
+        borderRadius: 25, // Bordas mais arredondadas
         fontSize: 18,
         fontWeight: "bold",
-        marginBottom: 20,
-        width: 150,
+        marginBottom: 15,
+        width: 160, // Largura ajustada
         textAlign: "center",
         textTransform: "uppercase",
-        letterSpacing: 1,
-    }
-}
+        letterSpacing: 1.2,
+    },
+    input: {
+        backgroundColor: '#fff', // Fundo branco para contraste
+        borderRadius: 15, // Bordas arredondadas
+        padding: 12, // Espaçamento interno ajustado
+        marginBottom: 15,
+        fontSize: 16,
+        color: '#333', // Texto escuro
+        borderBottomWidth: 1.5, // Borda inferior mais espessa
+        width: '100%', // Largura ajustada para melhor alinhamento
+        borderColor: '#ccc', // Borda cinza clara
+        borderStyle: 'solid',
+    },
+    inputContainer: {
+        width: '100%', // Largura ajustada para alinhar com os inputs
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 15,
+    },
+};
 
 export default Estilos;

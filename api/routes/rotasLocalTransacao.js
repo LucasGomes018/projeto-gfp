@@ -1,5 +1,4 @@
 import { BD } from "../db.js";
-import jwt from 'jsonwebtoken';
 
 const SECRET_KEY = 'chave_api_gfp';
 
@@ -126,24 +125,5 @@ class rotasLocalTransacao {
     }
 }
 
-export function autenticarToken4(req, res, next) {
-    // Extrair do token o cabeçalho da requisição
-    const token = req.headers['authorization']; // Bearer<token>
-  
-    // Verificar se o token foi fornecido na requisição
-    if (!token) return res.status(403).json({message: "Token não fornecido"})
-  
-    // Verificar a validade do token
-    //jwt.verify que valida se o token é legitimo
-    jwt.verify(token.split(" ")[1], SECRET_KEY, (err, local_transacao) => {
-      if(err) return res.status(403).json({message: "Token inválido"})
-  
-      // Se o token for válido, adiciona os dados do usuario(decodificados no token)
-      // tornando essas informações disponíveis nas rotas que precisam da autenticação
-      req.local_transacao = local_transacao;
-      next();
-  
-    })
-  }
 
 export default rotasLocalTransacao;

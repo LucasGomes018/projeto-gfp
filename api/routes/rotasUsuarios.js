@@ -10,12 +10,12 @@ class rotasUsuarios {
   
         try{
           const resultado = await BD.query(
-            `SELECT * FROM usuarios WHERE email = $1`,
+            `SELECT * FROM usuarios WHERE email = $1 and ativo = true`,
             [email]
           );
   
           if (resultado.rows.length === 0) {
-            return res.status(401).json({ message: "Email ou senha inválidos" });
+            return res.status(401).json({ message: "Email ou senha inválidos ou usuário desativado" });
           }
   
           const usuario = resultado.rows[0];
@@ -28,13 +28,15 @@ class rotasUsuarios {
           // Gerar um novo token para o usuario
           const token = jwt.sign(
             //payload
-            {id: usuario.id, nome: usuario.nome, email: usuario.email},
+            {id: usuario.id_usuario, nome: usuario.nome, email: usuario.email},
             //signature
             SECRET_KEY,
-            {expiresIn: '1h'}
+            {
+              expiresIn: '1h'
+            }
           )
   
-          return res.status(200).json({message: "Login bem-sucedido", token});
+          return res.status(200).json({token, id_usuario: usuario.id_usuario, nome: usuario.nome, email: usuario.email, tipo_acesso: usuario.tipo_acesso});
           // return res.status(200).json({message: "Login bem-sucedido", usuario});
   
         } catch (error) {
@@ -44,7 +46,7 @@ class rotasUsuarios {
       }
 
     static async novoUsuario(req, res) {
-        const { nome, email, senha, tipo_acesso } = req.body;
+        const { nome, email, senha, tipo_acesso} = req.body;
 
         const saltRounds = 10;
         const senhaCriptografada = await bcrypt.hash(senha, saltRounds);
@@ -70,7 +72,7 @@ class rotasUsuarios {
 
     static async listarUsuarios(req, res) {
         try {
-            const usuarios = await BD.query("SELECT * FROM usuarios");
+            const usuarios = await BD.query("SELECT * FROM usuarios WHERE ativo = true ORDER BY id_usuario");
             res.status(200).json(usuarios.rows);
         } catch (error) {
             console.error("Erro ao listar usuários:", error);
@@ -124,7 +126,7 @@ class rotasUsuarios {
 
     static async atualizar(req, res) {
         const { id } = req.params;
-        const { nome, email, senha, tipo_acesso } = req.body;
+        const { nome, email, senha, tipo_acesso, ativo } = req.body;
         try {
           // Inicializar arrays(vetores) para armazenar os campos e valores que serão atualizados
           const campos = [];
@@ -141,15 +143,24 @@ class rotasUsuarios {
           }
           if (senha !== undefined) {
             campos.push(`senha = $${valores.length + 1}`);
-            valores.push(senha);
+            const senhaCriptografada = await bcrypt.hash(senha, 10);
+            valores.push(senhaCriptografada);
           }
           if (tipo_acesso !== undefined) {
             campos.push(`tipo_acesso = $${valores.length + 1}`);
             valores.push(tipo_acesso);
           }
+          if (ativo !== undefined) {
+            campos.push(`ativo = $${valores.length + 1}`);
+            valores.push(ativo);
+          }
           if (campos.length === 0) {
             return res.status(400).json({ message: "Nenhum campo para atualizar foi fornecido." });
           }
+
+          console.log(campos);
+          console.log(valores);
+          
     
           // adicionar o id ao final de valores
     

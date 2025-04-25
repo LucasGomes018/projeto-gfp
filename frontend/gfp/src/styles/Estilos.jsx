@@ -6,10 +6,17 @@ export const corFundo2 = '#262626';
 
 
 const Estilos = {
+    container: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        flex: 1,
+        flexDirection: 'column',
+    },
     conteudo : {
         flex: 1,
         width: '100%',
         backgroundColor: corFundo,
+        
     },
     titulo: {
         textAlign: "center",
@@ -29,7 +36,7 @@ const Estilos = {
     },
 
     botao: {
-        backgroundColor: corPrincipal,
+        backgroundColor: "#2C3E50",
         color: "#fff",
         padding: 10,
         borderRadius: 5,
@@ -40,6 +47,21 @@ const Estilos = {
         textAlign: "center",
         textTransform: "uppercase",
         letterSpacing: 1,
+        cursor: "pointer",
+    },
+    input: {
+        backgroundColor: '#fff',
+        borderRadius: 50,
+        padding: 15,
+        marginBottom: 10,
+        width: '80%',
+        fontSize: 16,
+        color: '#333',
+        borderWidth: 1,
+        borderColor: '#ccc',
+        borderStyle: 'solid',
+        justifyContent: 'center',
+        alignItems: 'center',
     }
 }
 

@@ -1,6 +1,6 @@
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import Principal from "./Principal";
-import AntDesign from "@expo/vector-icons/AntDesign";
+import { AntDesign } from "@expo/vector-icons";
 
 const Drawer = createDrawerNavigator();
 
@@ -13,7 +13,7 @@ export default function MenuDrawer() {
         drawerInactiveTintColor: "#34495e",
         drawerStyle: {
           backgroundColor: "#ecf0f1",
-          width: 200,
+          width: 220,
           borderTopRightRadius: 20,
           borderBottomRightRadius: 20,
           elevation: 5, // Sombra no Android
