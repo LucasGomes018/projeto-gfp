@@ -133,6 +133,22 @@ class rotasSubCategorias {
           res.status(500).json({ message: "Erro ao atualizar sub-categoria", error: error.message });
         }
     }
+
+    static async filtrarSubCategoria(req, res) {
+    const { nome } = req.query;
+    try{
+      const query = `
+        SELECT * FROM subcategorias WHERE nome LIKE $1 AND ativo = true ORDER BY nome DESC`;
+
+      const valor = [`%${nome}%`]
+      const resposta = await BD.query(query, valor);
+      return res.status(200).json(resposta.rows);
+
+    } catch (error) {
+      console.error("Erro ao filtrar subcategorias:", error);
+      res.status(500).json({ message: "Erro ao filtrar subcategorias", error: error.message });
+    }
+  }
 }
 
 

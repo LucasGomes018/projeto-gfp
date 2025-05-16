@@ -181,6 +181,21 @@ class rotasUsuarios {
           res.status(500).json({ message: "Erro ao atualizar usuário", error: error.message });
         }
     }
+    static async filtrarUsuarios(req, res) {
+      const { nome } = req.query;
+      try{
+        const query = `
+          SELECT * FROM usuarios WHERE nome LIKE $1 AND ativo = true ORDER BY nome DESC`;
+
+        const valores = [`%${nome}%`]
+        const resposta = await BD.query(query, valores);
+        return res.status(200).json(resposta.rows);
+
+      } catch (error) {
+        console.error("Erro ao filtrar categorias:", error);
+        res.status(500).json({ message: "Erro ao filtrar categorias", error: error.message });
+      }
+  }
 }
 
 export function autenticarToken(req, res, next) {
